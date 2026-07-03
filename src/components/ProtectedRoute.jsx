@@ -8,8 +8,9 @@ export function ProtectedRoute({ children }) {
 }
 
 export function AdminRoute({ children }) {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/admin-login" replace />;
-  if (user.role !== 'admin') return <Navigate to="/" replace />;
-  return children;
+  const { isAdmin } = useAuth();
+  if (!isAdmin) return <Navigate to="/admin" replace />;
+  else{
+    return children;
+  }
 }

@@ -7,25 +7,23 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { adminLogin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const result = await login(email, password);
+    const result = await adminLogin(email, password);
     setLoading(false);
     if (result?.success) {
-      const savedUser = JSON.parse(localStorage.getItem('eshop_user'));
-      if (savedUser?.role === 'admin') {
-        navigate('/admin');
-      } else {
-        toast.error('Access denied. This account does not have admin privileges.');
-      }
+      navigate('/admin');
     }
-  };
-
+    else {
+      // alert('Access denied. This account does not have admin privileges.');
+      toast.error('Access denied. This account does not have admin privileges.');
+    }
+  }
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gray-50">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-2xl border border-rose-100 shadow-xl shadow-rose-500/5">
@@ -66,4 +64,5 @@ export default function AdminLogin() {
       </div>
     </div>
   );
+
 }

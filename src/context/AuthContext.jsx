@@ -7,10 +7,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('eshop_token') || null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setAdmin] = useState(false);
 
   // 1. DYNAMIC ENVIRONMENT URL SWITCHER
   const IS_PRODUCTION = import.meta.env.PROD;
-  const API_URL = IS_PRODUCTION 
+  const API_URL = IS_PRODUCTION
     ? "https://ecart-backend-yocf.onrender.com/api/auth" 
     : "http://localhost:5000/api/auth";
 
@@ -75,6 +76,28 @@ export function AuthProvider({ children }) {
       return { success: false, error: msg };
     }
   };
+  const adminLogin = async (email, password) => {
+    try {
+      const response = await axios.post(`${API_URL}/admin-login`, { 
+        email, 
+        password 
+      });
+      
+      console.log(response.data.token);
+      if (response.data.token) {
+        setAdmin(true)
+        setToken(response.data.token);
+        setUser(response.data.user);
+        localStorage.setItem('eshop_user', JSON.stringify(response.data.user));
+        return { success: true };
+      }
+    } catch (error) {
+      setAdmin(false);
+      const msg = error.response?.data?.message || "Invalid username credentials";
+      alert(msg);
+      return { success: false, error: msg };
+    }
+  };
 
   const logout = () => {
     setToken(null);
@@ -85,7 +108,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, loading, login, register, logout, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ user, setUser, token, loading,adminLogin, login, register, logout, isAdmin}}>
       {!loading && children}
     </AuthContext.Provider>
   );
