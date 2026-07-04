@@ -35,6 +35,18 @@ const protect = async (req, res, next) => {
 // export const signToken = (userId) =>
 //     jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+// adminOnly must run AFTER protect — it relies on req.user, which protect
+// populated from a verified JWT + a real database lookup. This can't be
+// spoofed by editing localStorage, since it never trusts anything the
+// client sends.
+const adminOnly = (req, res, next) => {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+};
+
 module.exports = {
     protect,
+    adminOnly,
 }

@@ -52,6 +52,10 @@ async function deleteOrder(req, res) {
 }
 async function getMyOrder(req, res) {
     try {
+      
+        if (req.user.email !== req.params.email) {
+            return res.status(403).json({ message: "Not authorized to view these orders" });
+        }
         const orders = await Order.find({ email: req.params.email }).sort({ date: -1 });
         res.json(orders);
     } catch (error) {

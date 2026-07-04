@@ -7,7 +7,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('eshop_token') || null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setAdmin] = useState(false);
+
+  // Derived, not stored — always computed from the current user object,
+  // so it can never drift and always survives a page refresh
+  // (since it's restored the moment `user` is restored from localStorage).
+  const isAdmin = user?.role === 'admin';
 
   // 1. DYNAMIC ENVIRONMENT URL SWITCHER
   const IS_PRODUCTION = import.meta.env.PROD;
@@ -83,16 +87,13 @@ export function AuthProvider({ children }) {
         password 
       });
       
-      console.log(response.data.token);
       if (response.data.token) {
-        setAdmin(true)
         setToken(response.data.token);
         setUser(response.data.user);
         localStorage.setItem('eshop_user', JSON.stringify(response.data.user));
         return { success: true };
       }
     } catch (error) {
-      setAdmin(false);
       const msg = error.response?.data?.message || "Invalid username credentials";
       alert(msg);
       return { success: false, error: msg };
@@ -108,7 +109,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, loading,adminLogin, login, register, logout, isAdmin}}>
+    <AuthContext.Provider value={{ user, setUser, token, loading, adminLogin, login, register, logout, isAdmin }}>
       {!loading && children}
     </AuthContext.Provider>
   );
