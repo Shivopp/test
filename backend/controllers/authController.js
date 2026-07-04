@@ -107,6 +107,16 @@ async function loginAdmin(req,res){
     }
 }
 
+async function getMe(req, res) {
+    // req.user is populated by the `protect` middleware from a verified JWT
+    // + a fresh database lookup — this is the ONLY safe source of truth for
+    // role. Never trust a `role` value sent by the client itself.
+    const user = req.user;
+    res.json({
+        user: { id: user._id, name: user.name, email: user.email, role: user.role }
+    });
+}
+
 module.exports = {
-    loginUser, registerUser, loginAdmin
+    loginUser, registerUser, loginAdmin, getMe
 }

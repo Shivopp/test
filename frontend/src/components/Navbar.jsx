@@ -10,7 +10,7 @@ const navLinkClass = ({ isActive }) =>
   }`;
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
 
@@ -65,7 +65,7 @@ export default function Navbar() {
                   <span className="text-xs font-semibold text-gray-700 max-w-[80px] truncate">{user.name}</span>
                 </div>
 
-                {user.role === 'admin' && (
+                {isAdmin && (
                   <Link
                     to="/admin"
                     className="hidden sm:inline-flex text-xs font-semibold text-gray-600 hover:text-purple-600 px-3 py-2 rounded-xl border border-gray-200 hover:border-purple-200 hover:bg-purple-50 transition"
